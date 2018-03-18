@@ -2,58 +2,14 @@ language: cpp
 matrix:
   include:
     - os: linux
-      env: NAME="clang-format"
-      dist: trusty
-      addons:
-        apt:
-          sources:
-            - sourceline: 'deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-6.0 main'
-              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
-            - sourceline: 'deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu trusty main'
-          packages:
-            - clang-format-6.0
-      script: "./.travis/clang-format/script.sh"
-    - os: linux
-      env: NAME="linux build"
+      env: NAME="flatpak build"
       sudo: required
       dist: trusty
       services: docker
-      addons:
-        apt:
-          packages:
-            - p7zip-full
-      install: "./.travis/linux/deps.sh"
-      script: "./.travis/linux/build.sh"
-      after_success: "./.travis/linux/upload.sh"
-    - if: branch = master AND type = push
-      os: linux
-      env: NAME="transifex push"
-      sudo: required
-      dist: trusty
-      addons:
-        apt:
-          packages:
-            - libsdl2-dev
-            - qtbase5-dev
-            - libqt5opengl5-dev
-            - qttools5-dev
-            - qttools5-dev-tools
-      install: "./.travis/transifex/deps.sh"
-      script: "./.travis/transifex/build.sh"
-      after_success: "./.travis/transifex/upload.sh"
-    - os: osx
-      env: NAME="macos build"
-      sudo: false
-      osx_image: xcode9.2
-      install: "./.travis/macos/deps.sh"
-      script: "./.travis/macos/build.sh"
-      after_success: "./.travis/macos/upload.sh"
-    - os: linux
-      env: NAME="linux build (frozen versions of dependencies)"
-      sudo: required
-      dist: trusty
-      services: docker
-      script: "./.travis/linux-frozen/build.sh"
+      shallow_clone: false
+      install: "./.travis/linux-flatpak/deps.sh"
+      script: "./.travis/linux-flatpak/build.sh"
+      after_success: "./.travis/linux-flatpak/upload.sh"
 
 deploy:
   provider: releases
@@ -65,7 +21,3 @@ deploy:
   on:
     tags: true
 
-notifications:
-  webhooks:
-    urls:
-      - https://api.citra-emu.org/code/travis/notify
